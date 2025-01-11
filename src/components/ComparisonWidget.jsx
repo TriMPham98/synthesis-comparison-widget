@@ -1,25 +1,47 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const ComparisonWidget = () => {
   const [leftStack, setLeftStack] = useState(3);
   const [rightStack, setRightStack] = useState(5);
-  const [mode, setMode] = useState("addRemove"); // 'addRemove' or 'drawCompare'
+  const [mode, setMode] = useState("addRemove");
+  const [blockSpacing, setBlockSpacing] = useState(5); // Reduced spacing
 
   const Block = () => (
     <div
-      className="w-24 h-12 bg-cyan-500 border border-cyan-300 rounded-sm mb-1 
-                    shadow-lg transform transition-all duration-300 
-                    hover:bg-cyan-400 hover:scale-105"></div>
+      className="w-24 h-12 bg-cyan-500 border border-cyan-300 rounded-sm 
+                 shadow-lg transform transition-all duration-300 
+                 hover:bg-cyan-400 hover:scale-105"></div>
   );
+
+  // Calculate the max spacing based on the larger stack
+  useEffect(() => {
+    const maxBlocks = Math.max(leftStack, rightStack);
+    // Assuming widget height is 500px, adjust as necessary
+    const availableSpace = 400; // This should be dynamic based on actual container height
+    // Reduced spacing to create a tighter stack
+    const spacing =
+      maxBlocks > 1 ? Math.floor(availableSpace / (maxBlocks - 1) / 4) : 0;
+    setBlockSpacing(spacing);
+  }, [leftStack, rightStack]);
 
   const Stack = ({ count, side }) => (
     <div
-      className="flex flex-col-reverse items-center w-20 min-h-64 
-                border-b-2 border-cyan-300 mx-8 mt-8">
+      className="flex flex-col-reverse items-center w-20 min-h-full 
+                border-b-2 border-cyan-300 mx-8"
+      style={{
+        position: "absolute",
+        left: side === "left" ? "calc(33.33% - 40px)" : "auto",
+        right: side === "right" ? "calc(33.33% - 40px)" : "auto",
+        top: 0,
+        bottom: 0,
+        justifyContent: "center",
+      }}>
       {Array(count)
         .fill(0)
         .map((_, i) => (
-          <Block key={`${side}-${i}`} />
+          <div key={`${side}-${i}`} style={{ marginBottom: blockSpacing }}>
+            <Block />
+          </div>
         ))}
     </div>
   );
@@ -79,20 +101,26 @@ const ComparisonWidget = () => {
   );
 
   return (
-    <div className="w-full min-h-screen bg-gray-900 p-8">
+    <div className="w-full min-h-screen bg-gray-900 p-8 relative">
       <div className="max-w-3xl mx-auto">
         <div className="flex flex-col items-center gap-8">
           <ControlPanel />
-          <div className="flex justify-center items-end w-full">
+          <div className="w-full h-[500px] relative">
             <Stack count={leftStack} side="left" />
-            <div className="text-4xl text-cyan-300 mb-8">
+            <Stack count={rightStack} side="right" />
+            <div
+              className="text-4xl text-cyan-300 absolute z-10"
+              style={{
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+              }}>
               {leftStack > rightStack
                 ? ">"
                 : leftStack < rightStack
                 ? "<"
                 : "="}
             </div>
-            <Stack count={rightStack} side="right" />
           </div>
         </div>
       </div>
