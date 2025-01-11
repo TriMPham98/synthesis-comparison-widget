@@ -7,7 +7,7 @@ const ComparisonWidget = () => {
 
   const Block = () => (
     <div
-      className="w-16 h-8 bg-cyan-500 border border-cyan-300 rounded-sm mb-1 
+      className="w-24 h-12 bg-cyan-500 border border-cyan-300 rounded-sm mb-1 
                     shadow-lg transform transition-all duration-300 
                     hover:bg-cyan-400 hover:scale-105"></div>
   );
