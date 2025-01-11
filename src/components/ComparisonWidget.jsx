@@ -48,7 +48,7 @@ const ComparisonWidget = () => {
       <div
         ref={ref}
         className="flex flex-col-reverse items-center w-20 min-h-full 
-                   border-b-2 border-cyan-300 mx-8"
+                   border-b-2 border-cyan-300 mx-8 cursor-pointer" // Added cursor-pointer class
         style={{
           position: "absolute",
           left: side === "left" ? "calc(33.33% - 40px)" : "auto",
