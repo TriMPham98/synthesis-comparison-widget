@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 const ComparisonWidget = () => {
   const [leftStack, setLeftStack] = useState(3);
   const [rightStack, setRightStack] = useState(5);
   const [mode, setMode] = useState("addRemove");
-  const [blockSpacing, setBlockSpacing] = useState(5); // Reduced spacing
+  const [blockSpacing, setBlockSpacing] = useState(5);
+  const leftStackRef = useRef(null);
+  const rightStackRef = useRef(null);
 
   const Block = () => (
     <div
@@ -13,38 +15,76 @@ const ComparisonWidget = () => {
                  hover:bg-cyan-400 hover:scale-105"></div>
   );
 
-  // Calculate the max spacing based on the larger stack
   useEffect(() => {
     const maxBlocks = Math.max(leftStack, rightStack);
-    // Assuming widget height is 500px, adjust as necessary
-    const availableSpace = 400; // This should be dynamic based on actual container height
-    // Reduced spacing to create a tighter stack
+    const availableSpace = 400;
     const spacing =
       maxBlocks > 1 ? Math.floor(availableSpace / (maxBlocks - 1) / 4) : 0;
     setBlockSpacing(spacing);
   }, [leftStack, rightStack]);
 
-  const Stack = ({ count, side }) => (
-    <div
-      className="flex flex-col-reverse items-center w-20 min-h-full 
-                border-b-2 border-cyan-300 mx-8"
-      style={{
-        position: "absolute",
-        left: side === "left" ? "calc(33.33% - 40px)" : "auto",
-        right: side === "right" ? "calc(33.33% - 40px)" : "auto",
-        top: 0,
-        bottom: 0,
-        justifyContent: "center",
-      }}>
-      {Array(count)
-        .fill(0)
-        .map((_, i) => (
-          <div key={`${side}-${i}`} style={{ marginBottom: blockSpacing }}>
-            <Block />
-          </div>
-        ))}
-    </div>
-  );
+  const handleClick = (side) => {
+    if (mode === "addRemove") {
+      if (side === "left") setLeftStack((prev) => Math.min(prev + 1, 10));
+      else setRightStack((prev) => Math.min(prev + 1, 10));
+    }
+  };
+
+  const handleDrag = (e, side) => {
+    if (mode === "addRemove") {
+      const dragDistance = e.movementY; // Positive for downward drag
+      if (dragDistance > 0) {
+        // Dragging down removes blocks
+        if (side === "left") setLeftStack((prev) => Math.max(prev - 1, 0));
+        else setRightStack((prev) => Math.max(prev - 1, 0));
+      }
+    }
+  };
+
+  const Stack = ({ count, side }) => {
+    const ref = side === "left" ? leftStackRef : rightStackRef;
+
+    return (
+      <div
+        ref={ref}
+        className="flex flex-col-reverse items-center w-20 min-h-full 
+                   border-b-2 border-cyan-300 mx-8"
+        style={{
+          position: "absolute",
+          left: side === "left" ? "calc(33.33% - 40px)" : "auto",
+          right: side === "right" ? "calc(33.33% - 40px)" : "auto",
+          top: 0,
+          bottom: 0,
+          justifyContent: "center",
+        }}
+        onClick={() => handleClick(side)}
+        onMouseDown={(e) => {
+          if (mode === "addRemove") {
+            ref.current.addEventListener("mousemove", (e) =>
+              handleDrag(e, side)
+            );
+          }
+        }}
+        onMouseUp={() => {
+          if (mode === "addRemove") {
+            ref.current.removeEventListener("mousemove", handleDrag);
+          }
+        }}
+        onMouseLeave={() => {
+          if (mode === "addRemove") {
+            ref.current.removeEventListener("mousemove", handleDrag);
+          }
+        }}>
+        {Array(count)
+          .fill(0)
+          .map((_, i) => (
+            <div key={`${side}-${i}`} style={{ marginBottom: blockSpacing }}>
+              <Block />
+            </div>
+          ))}
+      </div>
+    );
+  };
 
   const ControlPanel = () => (
     <div
