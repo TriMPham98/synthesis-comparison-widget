@@ -15,7 +15,7 @@ const ComparisonWidget = () => {
   const Stack = ({ count, side }) => (
     <div
       className="flex flex-col-reverse items-center w-20 min-h-64 
-                    border-b-2 border-cyan-300 mx-8">
+                border-b-2 border-cyan-300 mx-8 mt-8">
       {Array(count)
         .fill(0)
         .map((_, i) => (
