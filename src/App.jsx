@@ -1,13 +1,7 @@
-import { useState } from "react";
-import "./App.css";
+import ComparisonWidget from "./components/ComparisonWidget";
 
 function App() {
-  return (
-    <>
-      <div></div>
-      <div className="card"></div>
-    </>
-  );
+  return <ComparisonWidget />;
 }
 
 export default App;
