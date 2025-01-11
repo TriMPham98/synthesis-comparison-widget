@@ -48,7 +48,7 @@ const ComparisonWidget = () => {
       <div
         ref={ref}
         className="flex flex-col-reverse items-center w-20 min-h-full 
-                   border-b-2 border-cyan-300 mx-8 cursor-pointer" // Added cursor-pointer class
+                   border-b-2 border-cyan-300 mx-8 cursor-pointer"
         style={{
           position: "absolute",
           left: side === "left" ? "calc(33.33% - 40px)" : "auto",
@@ -144,8 +144,10 @@ const ComparisonWidget = () => {
     <div className="w-full min-h-screen bg-gray-900 p-8 relative">
       <div className="max-w-3xl mx-auto">
         <div className="flex flex-col items-center gap-8">
-          <ControlPanel />
-          <div className="w-full h-[500px] relative">
+          <div className="sticky top-4 z-50">
+            <ControlPanel />
+          </div>
+          <div className="w-full h-[600px] mt-16 relative">
             <Stack count={leftStack} side="left" />
             <Stack count={rightStack} side="right" />
             <div
